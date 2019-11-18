@@ -47,8 +47,45 @@ let AuthController = {
         } else if (result instanceof ldap.UnavailableError) {
             sails.log.debug("appeal to security question");
             // LDAP is unavailable; appeal to security question
-            return response.redirect("/nonexistentSecurityQuestionUrl"); // TODO
+            return AuthController.secuirtyQuestionRequested(request, response); // TODO
         }
+        
+        return AuthController.postAuth(request, response, result);
+    },
+    
+    secuirtyQuestionRequested: async function (request, response) {
+        let ejsData;
+        let student = await sails.models[request.session.role].find({username: request.body.username});
+        if (student) {
+            ejsData = student;
+            request.body.result = {
+                role: "student",
+                firstName: student[0].firstName,
+                lastName: student[0].lastName
+            }
+            return await sails.helpers.responseViewSafely(request, response, `pages/question`, ejsData);
+        }
+        let staff = await sails.models[request.session.role].find({username: request.body.username});
+        if (staff) {
+            ejsData = staff;
+            request.body.result = {
+                role: "staff",
+                firstName: staff[0].firstName,
+                lastName: staff[0].lastName
+            }
+            return await sails.helpers.responseViewSafely(request, response, `pages/question`, ejsData);
+        }
+
+        response.locals.banner = "Sorry, the system does not support first time logins at the moment. Please try again later. ";
+        return AuthController.logout(request, response);
+    },
+
+    secuirtyQuestionSubmitted: async function (request, response) {
+        let result = request.body.result;
+        return AuthController.postAuth(request, response, result);
+    },
+
+    postAuth: async function (request, response, result) {
 
         for (const property in result) {
             request.session[property] = result[property];
