@@ -43,9 +43,9 @@ module.exports = async function (request, response, proceed) {
     }
 
     // Users are authorized to see the security question page ...
-    if (request.path === "/question" && request.method === "GET") return proceed();
+    if (request.path === "/secuirtyquestion" && request.method === "GET") return proceed();
     // Users are authorized to submitt the security question page ...
-    if (request.path === "/question" && request.method === "POST") return proceed();
+    if (request.path === "/secuirtyquestion" && request.method === "POST") return proceed();
 
     // Users are authorized to access their own profile ...
     if (request.path === `${profileUrl}/edit` && request.method === "GET") return proceed();
