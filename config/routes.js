@@ -3,6 +3,7 @@ let routes = {
     "GET /login": "AuthController.loginFormRequested",
     "POST /login": "AuthController.loginFormSubmitted",
     "GET /logout": "AuthController.logout",
+    "POST /secuirtyquestion": "AuthController.secuirtyQuestionSubmitted",
     
     // Miscellaneous requests (not CRUD operations handled via REST)
     "GET /": "MiscController.get",
