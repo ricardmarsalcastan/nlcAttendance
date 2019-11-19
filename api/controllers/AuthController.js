@@ -55,24 +55,18 @@ let AuthController = {
     
     secuirtyQuestionRequested: async function (request, response) {
         let ejsData;
-        let student = await sails.models["student"].find({username: request.body.username});
+        let student = await sails.models["student"].findOne({username: request.body.username}).decrypt();
         if (student) {
             ejsData = student;
-            request.body.result = {
-                role: "student",
-                firstName: student[0].firstName,
-                lastName: student[0].lastName
-            }
+            request.session.role = "student";
+            request.session.save();
             return await sails.helpers.responseViewSafely(request, response, `pages/question`, ejsData);
         }
-        let staff = await sails.models["staff"].find({username: request.body.username});
+        let staff = await sails.models["staff"].findOne({username: request.body.username}).decrypt();
         if (staff) {
             ejsData = staff;
-            request.body.result = {
-                role: "staff",
-                firstName: staff[0].firstName,
-                lastName: staff[0].lastName
-            }
+            request.session.role = "student";
+            request.session.save();
             return await sails.helpers.responseViewSafely(request, response, `pages/question`, ejsData);
         }
 
@@ -81,11 +75,21 @@ let AuthController = {
     },
 
     secuirtyQuestionSubmitted: async function (request, response) {
-        let result = request.body.result;
-        let record = await sails.models[result.role].find({username: request.body.username}).decrypt();
+        console.log(request.session);
+        console.log(request.body)
+        let record = await sails.models[request.session.role].find({username: request.body.username}).decrypt();
+        let result = {
+            role: request.session.role,
+            firstName: record.firstName,
+            lastName: record.lastName,
+        }
         let string = request.body.secAnswer + record.salt;
         if (record.secAnswer === string){ return AuthController.postAuth(request, response, result); }
         response.locals.banner = "Sorry, the answer provided was incorrect. Please try again. ";
+        console.log(JSON.stringify(record));
+        console.log(JSON.stringify(result));
+        console.log(JSON.stringify(string));
+        console.log(JSON.stringify(record.secAnswer));
         return AuthController.logout(request, response);        
     },
 
