@@ -11,6 +11,9 @@ module.exports = {
         username: { type: "string", required: true, allowNull: false, unique: true, isEmail: true },
         firstName: { type: "string", required: true, allowNull: false },
         lastName: { type: "string", required: true, allowNull: false },
+        secQuestion: { model: "SecurityQuestion"},
+        secAnswer: { type: "string", allowNull: true, encrypt: true},
+        salt: { type: "string", allowNull: false},
         academicRank: { type: "string", required: false, allowNull: true, isIn: ["Freshman", "Sophomore", "Junior", "Senior"] },
         majorOne: { model: "Major" },
         majorTwo: { model: "Major" },
@@ -32,6 +35,7 @@ module.exports = {
      */
     domainDefined: {
         academicRank: true,
+        secQuestion: true,
         majorOne: true,
         majorTwo: true,
         residentialStatus: true,
@@ -46,6 +50,10 @@ module.exports = {
         academicRank: true,
         majorOne: true,
         residentialStatus: true,
+    },
+
+    afterEncodeAssociations: async function(record) {
+        if(record.secAnswer) { record.secAnswer = record.secAnswer + record.salt}
     },
 
     testRecords: [],
@@ -89,6 +97,9 @@ module.exports = {
                 username: `USERNAME${i + 1}@DEWV.NET`,
                 firstName: `FIRSTNAME${i + 1}`,
                 lastName: `LASTNAME${i + 1}`,
+                secQuestion: i + 1,
+                secAnswer: `Answer ${i}`,
+                salt: `ABC${i}`,
                 academicRank: i === 0 ? null : Student.attributes.academicRank.validations.isIn[i % Student.attributes.academicRank.validations.isIn.length],
                 majorOne: i === 0 ? null : ids.major[i],
                 majorTwo: i === 0 ? null : ids.major[(i + 1) % recordCount],
@@ -103,6 +114,9 @@ module.exports = {
                 username: `NoUpdateUser${i + 1}@DEWV.NET`,
                 firstName: `NoUpdateFirst${i + 1}`,
                 lastName: `NoUpdateLast${i + 1}`,
+                secQuestion: i + 1,
+                secAnswer: `Answer ${i}`,
+                salt: `ABC${i}`,
                 academicRank: i === 0 ? null : Student.attributes.academicRank.validations.isIn[i % Student.attributes.academicRank.validations.isIn.length],
                 majorOne: i === 0 ? null : ids.major[i],
                 majorTwo: i === 0 ? null : ids.major[(i + 1) % recordCount],

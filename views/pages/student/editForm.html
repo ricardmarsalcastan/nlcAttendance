@@ -13,6 +13,16 @@
       <label for="lastName" value="Last Name">*Last name</label>
       <input class="w3-input" id="lastName" name="lastName" type="text" required value="<%= formData.lastName %>">
     </div>
+
+    <div class="w3-select">
+      <label for="secQuestion">*Security Question</label>
+      <%- secQuestion %>
+    </div>
+
+    <div>
+      <label for="secAnswer" value="secAnswer">*Security Question Answer</label>
+      <input class="w3-input" id="secAnswer" name="secAnswer" type="text" value="">
+    </div>
     
     <div class="w3-select">
       <label for="academicRank">*Academic Rank</label>

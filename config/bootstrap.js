@@ -16,4 +16,5 @@ module.exports.bootstrap = async function() {
     await Student.createTestData();
     await Staff.createTestData();
     await Visit.createTestData();
+    await SecurityQuestion.createQuestions();
 };

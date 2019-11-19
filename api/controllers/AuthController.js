@@ -55,7 +55,7 @@ let AuthController = {
     
     secuirtyQuestionRequested: async function (request, response) {
         let ejsData;
-        let student = await sails.models[request.session.role].find({username: request.body.username});
+        let student = await sails.models["student"].find({username: request.body.username});
         if (student) {
             ejsData = student;
             request.body.result = {
@@ -65,7 +65,7 @@ let AuthController = {
             }
             return await sails.helpers.responseViewSafely(request, response, `pages/question`, ejsData);
         }
-        let staff = await sails.models[request.session.role].find({username: request.body.username});
+        let staff = await sails.models["staff"].find({username: request.body.username});
         if (staff) {
             ejsData = staff;
             request.body.result = {
@@ -82,7 +82,11 @@ let AuthController = {
 
     secuirtyQuestionSubmitted: async function (request, response) {
         let result = request.body.result;
-        return AuthController.postAuth(request, response, result);
+        let record = await sails.models[result.role].find({username: request.body.username}).decrypt();
+        let string = request.body.secAnswer + record.salt;
+        if (record.secAnswer === string){ return AuthController.postAuth(request, response, result); }
+        response.locals.banner = "Sorry, the answer provided was incorrect. Please try again. ";
+        return AuthController.logout(request, response);        
     },
 
     postAuth: async function (request, response, result) {
@@ -96,7 +100,8 @@ let AuthController = {
         }, {
             username: request.body.username,
             firstName: request.session.firstName,
-            lastName: request.session.lastName
+            lastName: request.session.lastName,
+            salt: Math.random().toString(36).replace(/[^a-z]+/g, '')
         });
 
         request.session.userId = userProfile.id;
