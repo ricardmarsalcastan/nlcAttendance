@@ -54,6 +54,7 @@ module.exports = {
 
     afterEncodeAssociations: async function(record) {
         if(record.secAnswer) { record.secAnswer = record.secAnswer + record.salt}
+        return record;
     },
 
     testRecords: [],
@@ -98,7 +99,7 @@ module.exports = {
                 firstName: `FIRSTNAME${i + 1}`,
                 lastName: `LASTNAME${i + 1}`,
                 secQuestion: i + 1,
-                secAnswer: `Answer ${i}`,
+                secAnswer: `Answer ${i + 1}`,
                 salt: `ABC${i}`,
                 academicRank: i === 0 ? null : Student.attributes.academicRank.validations.isIn[i % Student.attributes.academicRank.validations.isIn.length],
                 majorOne: i === 0 ? null : ids.major[i],
@@ -115,7 +116,7 @@ module.exports = {
                 firstName: `NoUpdateFirst${i + 1}`,
                 lastName: `NoUpdateLast${i + 1}`,
                 secQuestion: i + 1,
-                secAnswer: `Answer ${i}`,
+                secAnswer: `Answer ${i + 1}`,
                 salt: `ABC${i}`,
                 academicRank: i === 0 ? null : Student.attributes.academicRank.validations.isIn[i % Student.attributes.academicRank.validations.isIn.length],
                 majorOne: i === 0 ? null : ids.major[i],

@@ -1,11 +1,15 @@
 <div class="w3-container w3-display-middle w3-center w3-border w3-red w3-round w3-border-black">
 <form method="POST" action="/secuirtyquestion">
     
-    <h1>Davis &amp; Elkins College</h1>
-    <h2>Naylor Learning Center</h2>
+    <h2>Security Question</h2>
+
+    <input type="hidden" name="username" value="<%= user.username %>"/>
+    <input type="hidden" name="role" value="<%= role %>"/>
+    <input type="hidden" name="firstname" value="<%= user.firstname %>"/>
+    <input type="hidden" name="lastname" value="<%= user.lastname %>"/>
 
     <div>
-        <input name="question" class="w3-input w3-border" placeholder="Security Question" type="text" readonly vale="<%= formData.secQuestion %>"/>
+        <input name="question" class="w3-input w3-border" type="text" readonly vale="<%= user.secQuestion %>"/>
     </div> 
 
     <div>

@@ -57,14 +57,20 @@ let AuthController = {
         let ejsData;
         let student = await sails.models["student"].findOne({username: request.body.username}).decrypt();
         if (student) {
-            ejsData = student;
-            ejsData.role = "student"
+            ejsData = {
+                user: student,
+                role: "student"   
+            } 
+            console.log(ejsData);
             return await sails.helpers.responseViewSafely(request, response, `pages/question`, ejsData);
         }
         let staff = await sails.models["staff"].findOne({username: request.body.username}).decrypt();
         if (staff) {
-            ejsData = staff;
-            ejsData.role = "staff"
+            ejsData = {
+                user: staff,
+                role: "staff"   
+            } 
+            console.log(ejsData);
             return await sails.helpers.responseViewSafely(request, response, `pages/question`, ejsData);
         }
 

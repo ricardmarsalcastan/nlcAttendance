@@ -10,15 +10,27 @@ module.exports = {
         username: { type: "string", required: true, allowNull: false, unique: true },
         firstName: { type: "string", required: true, allowNull: false },
         lastName: { type: "string", required: true, allowNull: false },
+        secQuestion: { model: "SecurityQuestion"},
+        secAnswer: { type: "string", allowNull: true, encrypt: true},
+        salt: { type: "string", allowNull: false},
         isSlpInstructor: { type: "boolean", allowNull: "false", defaultsTo: false },
         forceUpdate: { type: "boolean", defaultsTo: true }
     },
 
     candidateKey: "username",
 
+    domainDefined: {
+        secQuestion: true,
+    },
+    
     beforeUpdate: async function(valuesToSet, proceed) {
         valuesToSet.forceUpdate = false;
         return proceed();
+    },
+
+    afterEncodeAssociations: async function(record) {
+        if(record.secAnswer) { record.secAnswer = record.secAnswer + record.salt}
+        return record;
     },
 
     testRecords: [],
