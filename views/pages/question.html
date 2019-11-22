@@ -1,19 +1,20 @@
 <div class="w3-container w3-display-middle w3-center w3-border w3-red w3-round w3-border-black">
-<form method="POST" action="/secuirtyquestion">
+<form method="POST" action="/securityquestion">
     
     <h2>Security Question</h2>
 
+    <input type="hidden" name="id" value="<%= user.id %>"/>
     <input type="hidden" name="username" value="<%= user.username %>"/>
-    <input type="hidden" name="role" value="<%= role %>"/>
-    <input type="hidden" name="firstname" value="<%= user.firstname %>"/>
-    <input type="hidden" name="lastname" value="<%= user.lastname %>"/>
+    <input type="hidden" name="role" value="<%= user.role %>"/>
+    <input type="hidden" name="firstName" value="<%= user.firstName %>"/>
+    <input type="hidden" name="lastName" value="<%= user.lastName %>"/>
 
     <div>
-        <input name="question" class="w3-input w3-border" type="text" readonly vale="<%= user.secQuestion %>"/>
+        <input name="secQuestion" class="w3-input w3-border" type="text" readonly value="<%= user.secQuestion.name %>"/>
     </div> 
 
     <div>
-        <input name="answer" class="w3-input w3-border" placeholder="Answer" type="text" required/>
+        <input name="secAnswer" class="w3-input w3-border" placeholder="Answer" type="text" required/>
     </div>
 
     <div class = "button w3-padding-16">

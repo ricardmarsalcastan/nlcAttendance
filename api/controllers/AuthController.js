@@ -31,6 +31,8 @@ let AuthController = {
             request.body.username = request.body.username + domain;
         }
 
+        request.session.username = request.body.username;
+
         let result;
         if (sails.config.custom.ldap) {
             result = await AuthController._ldapAuthentication(request.body.username, request.body.password);
@@ -47,7 +49,7 @@ let AuthController = {
         } else if (result instanceof ldap.UnavailableError) {
             sails.log.debug("appeal to security question");
             // LDAP is unavailable; appeal to security question
-            return AuthController.securityQuestionRequested(request, response); // TODO
+            return response.redirect('/securityquestion'); // TODO
         }
         
         return AuthController.postAuth(request, response, result);
@@ -55,38 +57,39 @@ let AuthController = {
     
     securityQuestionRequested: async function (request, response) {
         let ejsData;
-        let student = await sails.models["student"].findOne({username: request.body.username}).decrypt();
+        let student = await sails.models["student"].findOne({username: request.session.username});
         if (student) {
+            student = await sails.helpers.populateOne(sails.models["student"], student.id);
+            student.role = "student";
             ejsData = {
                 user: student,
-                role: "student"   
-            } 
-            console.log(ejsData);
+            }
             return await sails.helpers.responseViewSafely(request, response, `pages/question`, ejsData);
         }
-        let staff = await sails.models["staff"].findOne({username: request.body.username}).decrypt();
+        let staff = await sails.models["staff"].findOne({username: request.session.username});
         if (staff) {
+            staff = await sails.helpers.populateOne(sails.models["staff"], staff.id);
+            staff.role = "staff";
             ejsData = {
-                user: staff,
-                role: "staff"   
-            } 
-            console.log(ejsData);
+                user: staff, 
+            }
             return await sails.helpers.responseViewSafely(request, response, `pages/question`, ejsData);
         }
-
         response.locals.banner = "Sorry, the system does not support first time logins at the moment. Please try again later. ";
         return AuthController.logout(request, response);
     },
 
     securityQuestionSubmitted: async function (request, response) {
-        console.log(request.body)
-        let record = await sails.models[request.body.role].find({username: request.body.username}).decrypt();
+        let record = await sails.models[request.body.role].find({username: request.session.username});
+        record = await sails.helpers.populateOne(sails.models[request.body.role], request.body.id);
         let result = {
             role: request.body.role,
             firstName: request.body.firstName,
             lastName: request.body.lastName,
+            username: request.body.username,
         }
         let string = request.body.secAnswer + record.salt;
+        console.log(result);
         if (record.secAnswer === string){ return AuthController.postAuth(request, response, result); }
         response.locals.banner = "Sorry, the answer provided was incorrect. Please try again. ";
         return AuthController.logout(request, response);        
@@ -97,7 +100,7 @@ let AuthController = {
         for (const property in result) {
             request.session[property] = result[property];
         }
-
+        console.log(result);
         let userProfile = await sails.models[request.session.role].findOrCreate({
             username: request.body.username
         }, {

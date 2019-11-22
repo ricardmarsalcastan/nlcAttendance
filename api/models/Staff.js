@@ -49,6 +49,9 @@ module.exports = {
                 username: `STAFFUSERNAME${i + 1}@DEWV.NET`,
                 firstName: `STAFFFIRSTNAME${i + 1}`,
                 lastName: `STAFFLASTNAME${i + 1}`,
+                secQuestion: i + 1,
+                secAnswer: `Answer ${i}ABC${i}`,
+                salt: `ABC${i}`,
                 isSlpInstructor: i % 2 === 0,
                 forceUpdate: i === 4 ? false : Staff.attributes.forceUpdate.defaultsTo
             }).fetch());
